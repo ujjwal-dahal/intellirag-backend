@@ -105,6 +105,7 @@ async def upload_document(
         except SQLAlchemyError as error:
 
             db.rollback()
+            # print("SQLAlchemy Error:", repr(error))
             raise HTTPException(
                 status_code=500, detail="Failed to Save Document Metadata"
             ) from error

@@ -40,15 +40,16 @@ def chat(
 
         conversation_id = request.conversation_id
 
-        # User ko intent detect garne
-        intent = detect_chat_intent(message=request.question)
-
         # Existing booking conversation checking
-        booking_in_progress = conversation_id and has_booking_state(conversation_id)
+        booking_in_progress = bool(conversation_id) and has_booking_state(
+            conversation_id
+        )
 
-        # Booking state active cha bhane booking-related short replies continue garne
-        if booking_in_progress and intent == "booking":
-            intent = "booking"
+        # User ko intent detect garne
+        intent = detect_chat_intent(
+            message=request.question,
+            booking_in_progress=booking_in_progress,
+        )
 
         # Booking flow
         if intent == "booking":

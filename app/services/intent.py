@@ -7,6 +7,7 @@ from app.services.llm import get_groq_client
 
 def detect_chat_intent(
     message: str,
+    booking_in_progress: bool = False,
 ) -> Literal["rag", "booking"]:
 
     client = get_groq_client()
@@ -33,11 +34,13 @@ def detect_chat_intent(
                     "'booking' when the message is clearly part of an interview "
                     "booking conversation. "
                     "A short reply containing only a name, email, date, or time "
-                    "may be a booking continuation. However, do not classify "
-                    "general questions as booking just because they mention "
-                    "an interview. "
+                    "should be classified as 'booking' when a booking conversation "
+                    "is already in progress. "
+                    "Do not classify general questions as booking just because "
+                    "they mention an interview. "
                     "Return only a valid JSON object with exactly this key: "
                     '{"intent": "rag" or "booking"}.'
+                    f"Booking conversation in progress: {booking_in_progress}."
                 ),
             },
             {

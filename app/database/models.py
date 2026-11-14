@@ -1,11 +1,13 @@
 import uuid
 
-from datetime import datetime, timezone
+from datetime import datetime, date, time, timezone
 
 from sqlalchemy import (
     String,
     Integer,
     DateTime,
+    Date,
+    Time,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -69,8 +71,13 @@ class InterviewBooking(Base):
         nullable=False,
     )
 
-    interview_date: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
+    interview_date: Mapped[date] = mapped_column(
+        Date,
+        nullable=False,
+    )
+
+    interview_time: Mapped[time] = mapped_column(
+        Time,
         nullable=False,
     )
 

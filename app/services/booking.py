@@ -1,6 +1,5 @@
 from pydantic import ValidationError
-from datetime import date, time, datetime
-from zoneinfo import ZoneInfo
+from datetime import date, time
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
@@ -203,16 +202,11 @@ def save_interview_booking(
 
     interview_time = time.fromisoformat(booking_data["interview_time"])
 
-    interview_datetime = datetime.combine(
-        interview_date,
-        interview_time,
-        tzinfo=ZoneInfo("Asia/Kathmandu"),
-    )
-
     booking = InterviewBooking(
         name=booking_data["name"],
         email=booking_data["email"],
-        interview_date=interview_datetime,
+        interview_date=interview_date,
+        interview_time=interview_time,
     )
 
     try:

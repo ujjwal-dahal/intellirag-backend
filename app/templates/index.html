@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d1117" />
+
+    <title>IntelliRAG</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #0d1117;
+        color: #e6edf3;
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .container {
+        width: min(100% - 48px, 1050px);
+        margin: auto;
+      }
+
+      header {
+        height: 76px;
+        border-bottom: 1px solid #21262d;
+        display: flex;
+        align-items: center;
+      }
+
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-family: "DM Mono", monospace;
+        font-size: 19px;
+        font-weight: 500;
+      }
+
+      .logo span {
+        color: #58a6ff;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+        font-family: "DM Mono", monospace;
+        font-size: 12px;
+        color: #8b949e;
+      }
+
+      .nav-links a:hover {
+        color: #58a6ff;
+      }
+
+      .github {
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        padding: 8px 13px;
+        color: #e6edf3;
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        padding: 90px 0;
+      }
+
+      .hero {
+        max-width: 760px;
+      }
+
+      .tag {
+        display: inline-block;
+        font-family: "DM Mono", monospace;
+        color: #58a6ff;
+        font-size: 12px;
+        margin-bottom: 25px;
+        letter-spacing: 1px;
+      }
+
+      h1 {
+        font-size: clamp(46px, 8vw, 76px);
+        line-height: 1.1;
+        letter-spacing: -3px;
+        font-weight: 700;
+      }
+
+      h1 span {
+        color: #58a6ff;
+      }
+
+      .description {
+        color: #8b949e;
+        font-size: 16px;
+        line-height: 1.9;
+        max-width: 610px;
+        margin-top: 25px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 13px;
+        margin-top: 35px;
+        flex-wrap: wrap;
+      }
+
+      .button {
+        padding: 12px 19px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+      }
+
+      .primary {
+        background: #58a6ff;
+        color: #0d1117;
+      }
+
+      .primary:hover {
+        background: #79b8ff;
+      }
+
+      .secondary {
+        border: 1px solid #30363d;
+        color: #e6edf3;
+      }
+
+      .secondary:hover {
+        border-color: #58a6ff;
+      }
+
+      .stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 65px;
+      }
+
+      .stack span {
+        border: 1px solid #30363d;
+        background: #161b22;
+        padding: 8px 12px;
+        border-radius: 5px;
+        color: #aab3bf;
+        font-family: "DM Mono", monospace;
+        font-size: 11px;
+      }
+
+      footer {
+        border-top: 1px solid #21262d;
+        padding: 22px 0;
+        color: #6e7681;
+        font-family: "DM Mono", monospace;
+        font-size: 11px;
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      footer a:hover {
+        color: #58a6ff;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          width: calc(100% - 36px);
+        }
+
+        .nav-links {
+          gap: 15px;
+        }
+
+        .nav-links a:first-child {
+          display: none;
+        }
+
+        h1 {
+          letter-spacing: -2px;
+        }
+
+        main {
+          padding: 75px 0;
+        }
+
+        .stack {
+          margin-top: 45px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <nav class="container">
+        <a href="/" class="logo">Intelli<span>RAG</span>.</a>
+
+        <div class="nav-links">
+          <a href="/docs">Documentation</a>
+          <a
+            href="https://github.com/ujjwal-dahal"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="github"
+          >
+            GitHub ↗
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="hero">
+          <p class="tag">// INTELLIGENT DOCUMENT RETRIEVAL</p>
+
+          <h1>
+            Your documents.<br />
+            <span>One conversation.</span>
+          </h1>
+
+          <p class="description">
+            IntelliRAG is a document-based question-answering system powered by
+            Retrieval-Augmented Generation. Upload your documents, ask
+            questions, and get relevant answers through natural language.
+          </p>
+
+          <div class="actions">
+            <a href="/docs" class="button primary"> Explore API Docs → </a>
+
+            <a
+              href="https://github.com/ujjwal-dahal"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="button secondary"
+            >
+              View GitHub ↗
+            </a>
+          </div>
+
+          <div class="stack">
+            <span>Python</span>
+            <span>FastAPI</span>
+            <span>Groq</span>
+            <span>Qdrant</span>
+            <span>PostgreSQL</span>
+            <span>Redis</span>
+            <span>Sentence Transformers</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container footer-content">
+        <span>© 2026 IntelliRAG</span>
+        <span>
+          Built by
+          <a
+            href="https://github.com/ujjwal-dahal"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            @ujjwal-dahal
+          </a>
+        </span>
+      </div>
+    </footer>
+  </body>
+</html>

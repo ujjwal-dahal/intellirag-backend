@@ -39,8 +39,3 @@ class BookingDetails(BaseModel):
             raise ValueError("Interview date must be in the future.")
 
         return value
-
-    @field_validator("interview_time")
-    @classmethod
-    def validate_interview_time(cls, value: time) -> time:
-        return value

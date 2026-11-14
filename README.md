@@ -1,84 +1,227 @@
 # 🧠 IntelliRAG — Backend
 
-IntelliRAG is a **Retrieval-Augmented Generation (RAG)** backend built with **FastAPI**. It ingests documents, splits them into meaningful chunks, stores their embeddings in a vector database, and retrieves the most relevant context to answer user questions accurately.
+IntelliRAG is a **Retrieval-Augmented Generation (RAG)** backend built with **FastAPI**. It allows users to upload PDF and TXT documents, processes them using different chunking strategies, generates embeddings, and stores them in Qdrant for semantic search.
+
+It also supports conversational RAG with Redis-based chat memory and an AI-powered interview booking system.
 
 ---
 
 ## ✨ Features
 
-- 📄 Document ingestion with **two chunking strategies**
-- 🔍 Fast vector search using **HNSW indexing**
-- 📐 **Cosine similarity** for semantic matching
-- ⚡ Redis-based caching with **Upstash**
-- 🗄️ Persistent relational storage with **Neon (PostgreSQL)** + **SQLAlchemy**
-- 🚀 high-performance REST API with **FastAPI**
+- 📄 **Document Ingestion:** Upload PDF and TXT documents.
+- 🧩 **Multiple Chunking Strategies:** Recursive character splitting and semantic chunking.
+- 🧠 **Text Embeddings:** Convert document chunks and user queries into vector embeddings.
+- 🔍 **Semantic Search:** Retrieve relevant document chunks using Qdrant.
+- ⚡ **Vector Indexing:** HNSW indexing with cosine similarity.
+- 💬 **Conversational RAG:** Answer questions using retrieved document context.
+- 🧵 **Chat Memory:** Maintain conversation history using Upstash Redis.
+- 📅 **Interview Booking:** Collect and validate interview details through an AI-powered conversation.
+- 🗄️ **Persistent Storage:** Store document metadata and interview bookings in Neon PostgreSQL.
+- 🚀 **REST API:** Built with FastAPI and documented using Swagger UI.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer           | Technology                          |
-| --------------- | ----------------------------------- |
-| API Framework   | FastAPI                             |
-| Relational DB   | Neon Database (Serverless Postgres) |
-| ORM             | SQLAlchemy                          |
-| Vector DB       | Qdrant Cloud                        |
-| Cache           | Upstash Redis                       |
-| Package Manager | uv                                  |
+| Layer                | Technology            |
+| -------------------- | --------------------- |
+| Programming Language | Python                |
+| API Framework        | FastAPI               |
+| LLM Provider         | Groq                  |
+| Embedding Model      | Sentence Transformers |
+| Relational Database  | Neon PostgreSQL       |
+| ORM                  | SQLAlchemy            |
+| Vector Database      | Qdrant Cloud          |
+| Vector Index         | HNSW                  |
+| Similarity Metric    | Cosine Similarity     |
+| Cache & Chat Memory  | Upstash Redis         |
+| PDF Processing       | PyMuPDF               |
+| Package Manager      | uv                    |
+| Data Validation      | Pydantic              |
 
 ---
 
 ## 🧩 RAG Pipeline Design
 
-### 1. Chunking Strategies
+### 1. Document Ingestion
 
-IntelliRAG supports two ways of splitting documents:
+IntelliRAG supports PDF and TXT document uploads.
 
-1. **Recursive Character Splitter**
-   Splits text by a hierarchy of separators (paragraphs → sentences → words → characters) with a configurable chunk size and overlap. Fast and predictable.
+The ingestion process follows these steps:
 
-2. **Semantic Chunking**
-   Splits text based on _meaning_. Sentences with similar semantics are grouped together, and a new chunk starts where the topic shifts. Produces more coherent chunks and better retrieval quality.
+1. Validate the uploaded file.
+2. Extract text from the document.
+3. Split extracted text into chunks.
+4. Generate embeddings for each chunk.
+5. Store document metadata in PostgreSQL.
+6. Store chunk embeddings and metadata in Qdrant.
 
-### 2. Embeddings
+### 2. Chunking Strategies
+
+IntelliRAG supports two chunking strategies:
+
+**1. Recursive Character Splitting**
+
+- Splits text using a hierarchy of separators.
+- Tries to preserve paragraphs and sentences.
+- Uses configurable chunk size and overlap.
+- Fast and predictable.
+
+**2. Semantic Chunking**
+
+- Splits text based on semantic meaning.
+- Groups sentences with similar meanings.
+- Starts a new chunk when the topic changes.
+- Helps preserve meaningful context.
+
+### 3. Embeddings
 
 - Embedding dimension: **384**
-- Every chunk and every user query is converted into a 384-dimensional vector.
+- Each document chunk is converted into a 384-dimensional vector.
+- User queries are also converted into vectors before retrieval.
+- Sentence Transformers is used for embedding generation.
 
-### 3. Vector Indexing & Search
+### 4. Vector Indexing & Search
 
-- **Index algorithm:** HNSW (Hierarchical Navigable Small World)
-  A graph-based approximate nearest neighbour algorithm that makes searching very fast, even with a large number of vectors.
-- **Distance metric:** Cosine Similarity
-  Measures the angle between vectors, so it focuses on semantic meaning rather than vector magnitude.
+**Index Algorithm: HNSW**
 
-### 4. Flow
+Hierarchical Navigable Small World (HNSW) is a graph-based approximate nearest neighbor algorithm used for efficient vector search.
 
+**Distance Metric: Cosine Similarity**
+
+Cosine similarity measures the angle between two vectors to determine how semantically similar they are.
+
+### 5. RAG Flow
+
+```text
+             DOCUMENT INGESTION
+
+PDF / TXT Document
+        |
+        v
+   Text Extraction
+        |
+        v
+      Chunking
+        |
+        v
+    Embeddings
+        |
+        v
+      Qdrant
+  (HNSW + Cosine)
+        |
+        |
+        v
+             CONVERSATIONAL RAG
+
+User Query
+     |
+     v
+Query Embedding
+     |
+     v
+Qdrant Similarity Search
+     |
+     v
+Retrieve Top-K Chunks
+     |
+     v
+Build Context + Chat History
+     |
+     v
+      Groq LLM
+     |
+     v
+   Final Answer
 ```
-Document → Chunking → Embedding (384-d) → Qdrant (HNSW, cosine)
-                                                  │
-User Query → Embedding (384-d) → Similarity Search ┘ → Top-K chunks → Answer
-```
+
+---
+
+## 💬 Conversational RAG & Chat Memory
+
+- Maintains conversation history using Upstash Redis.
+- Uses a unique conversation ID to identify each conversation.
+- Retrieves relevant document chunks for user queries.
+- Uses previous conversation messages as context.
+- Preserves recent chat messages for multi-turn conversations.
+- Automatically expires Redis conversation data after the configured TTL.
+
+---
+
+## 📅 AI-Powered Interview Booking
+
+IntelliRAG also supports interview booking through the same conversational chat endpoint.
+
+**Booking Details:**
+
+- Candidate Name
+- Email Address
+- Interview Date
+- Interview Time
+
+**Booking Flow:**
+
+1. Detect whether the user wants to book an interview.
+2. Extract booking details using Groq LLM.
+3. Store collected details temporarily in Redis.
+4. Ask for missing information.
+5. Validate the collected information using Pydantic.
+6. Ask the user to confirm the booking.
+7. Save the confirmed booking in PostgreSQL.
 
 ---
 
 ## 📁 Project Structure
 
-```
+```text
 intellirag-backend/
+│
 ├── app/
-│   ├── api/          # API routes / endpoints
-│   ├── core/         # Config, settings, security, clients
-│   ├── database/     # SQLAlchemy models, session, DB setup
-│   ├── schemas/      # Pydantic request/response schemas
-│   ├── utils/        # Helpers (chunking, embeddings, etc.)
-│   ├── __init__.py
-│   └── main.py       # FastAPI entry point
-├── src/
-├── .env.example      # Example environment variables
+│   ├── api/
+│   │   ├── chat_routes.py
+│   │   └── document_routes.py
+│   │
+│   ├── core/
+│   │   ├── config.py
+│   │   └── constants.py
+│   │
+│   ├── database/
+│   │   ├── base.py
+│   │   ├── connection.py
+│   │   ├── models.py
+│   │   ├── init_db.py
+│   │   └── qdrant.py
+│   │
+│   ├── schemas/
+│   │   ├── booking.py
+│   │   ├── chat.py
+│   │   └── document.py
+│   │
+│   ├── services/
+│   │   ├── booking.py
+│   │   ├── booking_llm.py
+│   │   ├── chat_memory.py
+│   │   ├── chunking.py
+│   │   ├── embedding.py
+│   │   ├── ingestion.py
+│   │   ├── intent.py
+│   │   ├── llm.py
+│   │   ├── rag.py
+│   │   └── vector_store.py
+│   │
+│   ├── utils/
+│   │   └── file_extractor.py
+│   │
+│   ├── templates/
+│   │   └── index.html
+│   │
+│   └── main.py
+│
+├── .env.example
 ├── .gitignore
 ├── .python-version
-├── pyproject.toml    # Dependencies (uv)
+├── pyproject.toml
 ├── uv.lock
 └── README.md
 ```
@@ -89,34 +232,42 @@ intellirag-backend/
 
 ### Prerequisites
 
-- Python (version in `.python-version`)
-- [uv](https://docs.astral.sh/uv/) installed
-- Accounts for: [Neon](https://neon.tech), [Qdrant Cloud](https://cloud.qdrant.io), [Upstash](https://upstash.com)
+- Python version specified in `.python-version`
+- [uv](https://docs.astral.sh/uv/) package manager
+- [Groq](https://console.groq.com/) API key
+- [Neon](https://neon.tech/) PostgreSQL database
+- [Qdrant Cloud](https://cloud.qdrant.io/) account
+- [Upstash](https://upstash.com/) Redis database
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone <your-repo-url>
 cd intellirag-backend
 ```
 
-### 2. Install dependencies
+### 2. Install Dependencies
 
 ```bash
 uv sync
 ```
 
-### 3. Configure environment variables
+### 3. Configure Environment Variables
+
+Create your `.env` file:
 
 ```bash
 cp .env.example .env
 ```
 
-Then fill in your values in `.env`:
+Configure the required environment variables:
 
 ```env
-# Neon (PostgreSQL)
-DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+# Groq
+GROQ_API_KEY=your_groq_api_key
+
+# Neon PostgreSQL
+DATABASE_URL=postgresql+psycopg://user:password@host/dbname?sslmode=require
 
 # Qdrant Cloud
 QDRANT_URL=https://your-cluster.qdrant.io
@@ -127,9 +278,22 @@ UPSTASH_REDIS_REST_URL=https://your-upstash-url
 UPSTASH_REDIS_REST_TOKEN=your_upstash_token
 ```
 
-> ⚠️ Variable names above are examples — keep them the same as in your `.env.example`.
+> Note: Variable names should match the configuration defined in `.env.example` and the application settings.
 
-### 4. Run the server
+### 4. Initialize Database Tables
+
+Before starting the application, create the required PostgreSQL tables:
+
+```bash
+uv run python -m app.database.init_db
+```
+
+This creates the following tables:
+
+- `documents_metadata`
+- `interview_bookings`
+
+### 5. Run the Application
 
 ```bash
 uv run uvicorn app.main:app --reload
@@ -137,20 +301,27 @@ uv run uvicorn app.main:app --reload
 
 The API will be available at:
 
-- API: `http://127.0.0.1:8000`
-- Swagger Docs: `http://127.0.0.1:8000/docs`
-- ReDoc: `http://127.0.0.1:8000/redoc`
+| Service      | URL                          |
+| ------------ | ---------------------------- |
+| Home         | http://127.0.0.1:8000        |
+| Swagger UI   | http://127.0.0.1:8000/docs   |
+| ReDoc        | http://127.0.0.1:8000/redoc  |
+| Health Check | http://127.0.0.1:8000/health |
 
 ---
 
 ## 🔐 Environment & Security
 
-- Never commit your `.env` file (it is already in `.gitignore`).
+- Never commit your `.env` file.
+- Keep API keys and database credentials private.
 - Only commit `.env.example` with placeholder values.
+- Validate uploaded files before processing.
+- Use environment variables for sensitive configuration.
 
 ---
 
 ## 👨‍💻 Author
 
 **Ujjwal Dahal**
+
 GitHub: [@ujjwal-dahal](https://github.com/ujjwal-dahal)
