@@ -27,3 +27,12 @@ TEMPERATURE = 0.2
 # Redis
 CHAT_HISTORY_LIMIT = 10
 CHAT_MEMORY_TTL = 60 * 60 * 24 * 7
+BOOKING_MEMORY_TTL = 60 * 60 * 24
+
+
+REQUIRED_BOOKING_FIELDS = [
+    "name",
+    "email",
+    "interview_date",
+    "interview_time",
+]
