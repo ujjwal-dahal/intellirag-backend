@@ -2,15 +2,10 @@ from qdrant_client import QdrantClient, models
 
 # project imports
 from app.core.config import settings
-
-COLLECTION_NAME = "rag-documents"
-
-# all-MiniLM-L6-v2 embedding dimension
-VECTOR_SIZE = 384
-
+from app.core.constants import COLLECTION_NAME, VECTOR_SIZE, M, EF_CONSTRUCT
 
 """Qdrant Client"""
-qdrant_client = QdrantClient(
+qd_client = QdrantClient(
     url=settings.qdrant_url,
     api_key=settings.qdrant_api_key,
 )
@@ -20,7 +15,7 @@ qdrant_client = QdrantClient(
 
 def check_qdrant_connection() -> bool:
     try:
-        qdrant_client.get_collections()
+        qd_client.get_collections()
         return True
     except Exception:
         return False
@@ -32,14 +27,14 @@ def check_qdrant_connection() -> bool:
 def create_doc_collection():
 
     # Collection already Exist then Exit i.e no need to recreate
-    if qdrant_client.collection_exists(COLLECTION_NAME):
+    if qd_client.collection_exists(COLLECTION_NAME):
         return
 
-    qdrant_client.create_collection(
+    qd_client.create_collection(
         collection_name=COLLECTION_NAME,
         vectors_config=models.VectorParams(
             size=VECTOR_SIZE, distance=models.Distance.COSINE
         ),
         # HNSW (Hierarchical Navigable Small World) Indexing Configuration
-        hnsw_config=models.HnswConfigDiff(m=16, ef_construct=100),
+        hnsw_config=models.HnswConfigDiff(m=M, ef_construct=EF_CONSTRUCT),
     )

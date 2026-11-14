@@ -5,9 +5,17 @@ import numpy as np
 
 # Project Imports
 from app.services.embedding import get_embedding_model
+from app.core.constants import (
+    CHUNK_OVERLAP,
+    CHUNK_SIZE,
+    SIMILARITY_THRESHOLD,
+    MAX_CHUNK_SIZE,
+)
 
 
-def recursive_chunking(texts: str, chunk_size: int = 800, chunk_overlap: int = 120):
+def recursive_chunking(
+    texts: str, chunk_size: int = CHUNK_SIZE, chunk_overlap: int = CHUNK_OVERLAP
+):
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
@@ -22,8 +30,8 @@ def recursive_chunking(texts: str, chunk_size: int = 800, chunk_overlap: int = 1
 
 def semantic_chunking(
     texts: str,
-    similarity_threshold: float = 0.65,
-    max_chunk_size: int = 1000,
+    similarity_threshold: float = SIMILARITY_THRESHOLD,
+    max_chunk_size: int = MAX_CHUNK_SIZE,
 ):
 
     # Texts lai Sentences ma Divide using Regex
@@ -66,7 +74,7 @@ def semantic_chunking(
         show_progress_bar=False,
     )
 
-    chunks = []
+    final_chunks = []
 
     current_chunk = processed_sentences[0]
 
@@ -93,13 +101,13 @@ def semantic_chunking(
             current_chunk += " " + next_sentence
 
         else:
-            chunks.append(current_chunk)
+            final_chunks.append(current_chunk)
             current_chunk = next_sentence
 
     # Adding Last Chunk
-    chunks.append(current_chunk)
+    final_chunks.append(current_chunk)
 
-    return chunks
+    return final_chunks
 
 
 def create_chunks(

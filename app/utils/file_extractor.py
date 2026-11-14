@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 
 def extract_pdf_text(file_bytes: bytes) -> str:
@@ -6,7 +6,7 @@ def extract_pdf_text(file_bytes: bytes) -> str:
     Extract text from PDF bytes using PyMuPDF.
     """
 
-    with fitz.open(
+    with pymupdf.open(
         stream=file_bytes,
         filetype="pdf",
     ) as pdf:
