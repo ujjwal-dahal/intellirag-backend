@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 # Project Imports
 from app.api.document_routes import router as document_router
+from app.api.chat_route import router as chat_router
 from app.database.qdrant import create_doc_collection
 
 
@@ -24,6 +25,7 @@ app = FastAPI(
 
 # Registering Router
 app.include_router(document_router)
+app.include_router(chat_router)
 
 
 @app.get("/health")
