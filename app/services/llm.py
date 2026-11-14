@@ -13,10 +13,7 @@ def get_groq_client() -> Groq:
     return Groq(api_key=settings.groq_api_key)
 
 
-def generate_answer(
-    question: str,
-    context: str,
-) -> str:
+def generate_answer(question: str, context: str, chat_history: list) -> str:
 
     client = get_groq_client()
 
@@ -37,7 +34,11 @@ def generate_answer(
             },
             {
                 "role": "user",
-                "content": (f"Context:\n{context}\n\n" f"Question:\n{question}"),
+                "content": (
+                    f"Context:\n{context}\n\n"
+                    f"History:\n{chat_history}\n"
+                    f"Question:\n{question}"
+                ),
             },
         ],
         temperature=TEMPERATURE,

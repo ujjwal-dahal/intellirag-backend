@@ -18,11 +18,12 @@ router = APIRouter(
 def chat(request: ChatRequest) -> ChatResponse:
 
     try:
-        answer = generate_rag_answer(
-            question=request.question,
+        answer, conversation_id = generate_rag_answer(
+            question=request.question, conversation_id=request.conversation_id
         )
 
         return ChatResponse(
+            conversation_id=conversation_id,
             question=request.question,
             answer=answer,
         )

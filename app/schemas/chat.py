@@ -7,7 +7,10 @@ class ChatRequest(BaseModel):
         max_length=2000,
     )
 
+    conversation_id: str | None = None
+
 
 class ChatResponse(BaseModel):
+    conversation_id: str
     question: str
     answer: str
